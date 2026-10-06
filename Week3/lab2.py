@@ -16,5 +16,6 @@ def get_user(id):
                            resource_id=id)
     return jsonify({"id": id, "name": USERS[id]})
 
+
 if __name__ == "__main__":
     app.run(debug=False)
