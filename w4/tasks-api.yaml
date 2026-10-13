@@ -1,0 +1,177 @@
+openapi: 3.0.3
+info:
+  title: Tasks API
+  description: Quản lý task nội bộ — title, status, priority, dueDate, assigneeId.
+  version: 1.0.0
+
+paths:
+  /tasks:
+    get:
+      summary: Lấy danh sách task
+      operationId: getTasks
+      responses:
+        '200':
+          description: Danh sách task
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Task'
+    post:
+      summary: Tạo task mới
+      operationId: createTask
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateTaskInput'
+      responses:
+        '201':
+          description: Task đã tạo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+
+  /tasks/{taskId}:
+    parameters:
+      - in: path
+        name: taskId
+        required: true
+        schema:
+          type: string
+          format: uuid
+    get:
+      summary: Lấy chi tiết task
+      operationId: getTaskById
+      responses:
+        '200':
+          description: Chi tiết task
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+        '404':
+          description: Không tìm thấy task
+    patch:
+      summary: Cập nhật task
+      operationId: patchTask
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateTaskInput'
+      responses:
+        '200':
+          description: Task sau khi cập nhật
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+        '404':
+          description: Không tìm thấy task
+    delete:
+      summary: Xóa task
+      operationId: deleteTask
+      responses:
+        '204':
+          description: Xóa thành công (no body)
+        '404':
+          description: Không tìm thấy task
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    # 1. Schema Task đầy đủ
+    Task:
+      type: object
+      required:
+        - id
+        - title
+        - status
+        - priority
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: "9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d"
+        title:
+          type: string
+          example: "Làm bài tập API tuần 4"
+        status:
+          type: string
+          enum: [todo, in_progress, done]
+          example: "todo"
+        priority:
+          type: string
+          enum: [low, medium, high]
+          example: "medium"
+        dueDate:
+          type: string
+          format: date-time
+          example: "2026-10-20T23:59:59Z"
+        assigneeId:
+          type: string
+          format: uuid
+          example: "c73bcdcc-2669-4bf6-81d3-e4ae73fb11fd"
+
+    # 2. Schema CreateTaskInput: dữ liệu gửi lên khi tạo mới
+    CreateTaskInput:
+      type: object
+      required:
+        - title
+      properties:
+        title:
+          type: string
+          example: "Làm bài tập API tuần 4"
+        status:
+          type: string
+          enum: [todo, in_progress, done]
+          default: "todo"
+        priority:
+          type: string
+          enum: [low, medium, high]
+          default: "medium"
+        dueDate:
+          type: string
+          format: date-time
+          example: "2026-10-20T23:59:59Z"
+        assigneeId:
+          type: string
+          format: uuid
+          example: "c73bcdcc-2669-4bf6-81d3-e4ae73fb11fd"
+
+    # 3. Schema UpdateTaskInput: dữ liệu gửi lên khi PATCH (các trường tuỳ chọn)
+    UpdateTaskInput:
+      type: object
+      properties:
+        title:
+          type: string
+        status:
+          type: string
+          enum: [todo, in_progress, done]
+        priority:
+          type: string
+          enum: [low, medium, high]
+        dueDate:
+          type: string
+          format: date-time
+        assigneeId:
+          type: string
+          format: uuid
+
+    # 4. Schema Error: cấu trúc báo lỗi cơ bản
+    Error:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Task not found"
