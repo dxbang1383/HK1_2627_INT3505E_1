@@ -4,6 +4,7 @@ from .extensions import db, migrate
 from .config import DefaultConfig
 from .errors import register_error_handlers
 from .api.products import products_bp
+from .api.health import health_bp
 
 def create_app(config=None):
     """
@@ -21,7 +22,8 @@ def create_app(config=None):
     # Đăng ký bộ xử lý lỗi tập trung
     register_error_handlers(app)
 
-    # Đăng ký Blueprint quản lý sản phẩm
+    # Đăng ký các Blueprint
     app.register_blueprint(products_bp)
+    app.register_blueprint(health_bp)
 
     return app
