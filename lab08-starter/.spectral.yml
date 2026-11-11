@@ -1,0 +1,46 @@
+extends: ["spectral:oas"]
+
+rules:
+  # Tắt các cảnh báo metadata không bắt buộc trong bài lab
+  info-contact: off
+  operation-description: off
+  operation-tags: off
+
+  # Lỗi 1: Bắt buộc mọi operation đều có operationId (bao gồm GET /books)
+  operation-operationId: error
+
+  # Lỗi 2: Response 204 không được khai báo body (content)
+  no-204-response-body:
+    description: "Response HTTP 204 không được phép khai báo body (content)."
+    severity: error
+    given: "$.paths[*][*].responses['204']"
+    then:
+      field: content
+      function: falsy
+
+  # Lỗi 3: Book.year phải là integer khớp với model Python
+  book-year-must-be-integer:
+    description: "Book.year phải có kiểu integer để khớp với model Python."
+    severity: error
+    resolved: false
+    given: "$.components.schemas.Book.properties.year"
+    then:
+      field: type
+      function: pattern
+      functionOptions:
+        match: "^integer$"
+
+  # Custom rule theo yêu cầu Lab 2: response 200 phải có nhiều hơn 0 trường trong schema
+  response-200-non-empty-schema:
+    description: "Response 200 phải khai báo nhiều hơn 0 trường (properties) trong schema."
+    severity: error
+    given:
+      - "$.paths[*][*].responses['200'].content[?(@.schema.type == 'object')].schema"
+      - "$.paths[*][*].responses['200'].content[?(@.schema.type == 'array')].schema.items"
+    then:
+      - field: properties
+        function: truthy
+      - field: properties
+        function: length
+        functionOptions:
+          min: 1
