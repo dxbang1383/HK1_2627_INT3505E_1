@@ -1,20 +1,19 @@
-# users_data.py - Nguồn dữ liệu người dùng dùng chung cho các version
 
 USERS = {
     1: {
         "id": 1,
-        "f": "Văn",
-        "l": "Nguyễn",
-        "first_name": "Văn",
-        "last_name": "Nguyễn",
+        "f": "Van",
+        "l": "Nguyen",
+        "first_name": "Van",
+        "last_name": "Nguyen",
         "email": "van.nguyen@example.com",
     },
     2: {
         "id": 2,
-        "f": "Thị",
-        "l": "Trần",
-        "first_name": "Thị",
-        "last_name": "Trần",
+        "f": "Thi",
+        "l": "Tran",
+        "first_name": "Thi",
+        "last_name": "Tran",
         "email": "thi.tran@example.com",
     },
 }
